@@ -3,25 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Interaktif Keuangan Negara (50 Soal)</title>
+    <title>Kuis Interaktif Keuangan Negara & BLU</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; }
-        .quiz-container { max-width: 1200px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
-        .question { font-weight: 600; font-size: 1.05em; margin-bottom: 15px; }
-        .statement-box { background-color: #eef2f5; padding: 12px; border-left: 4px solid #3498db; margin-bottom: 15px; border-radius: 4px; }
-        .options { display: flex; flex-direction: column; gap: 10px; }
-        .option-btn { padding: 12px 15px; border: 1px solid #ccc; background: #fff; border-radius: 8px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.9em; }
-        .option-btn:hover { background-color: #e8f4fd; border-color: #3498db; }
-        .next-btn { margin-top: 20px; width: 100%; padding: 12px; background: #2ecc71; color: #fff; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; display: none; }
-        .next-btn:hover { background: #27ae60; }
-        .result-container { display: none; }
-        .score-board { text-align: center; font-size: 1.3em; font-weight: bold; margin-bottom: 20px; padding: 15px; background: #e8f8f5; border-radius: 8px; color: #16a085; }
-        .review-item { border-bottom: 1px solid #eee; padding: 15px 0; }
-        .correct { color: #27ae60; font-weight: bold; }
-        .wrong { color: #e74c3c; font-weight: bold; }
-        .explanation { font-size: 0.85em; color: #555; background: #f9f9f9; padding: 8px; margin-top: 5px; border-radius: 4px; }
-        .restart-btn { width: 100%; padding: 12px; background: #3498db; color: #fff; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; font-size: 1em; }
+        * {
+            box-sizing: border-box;
+        }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f7f6; 
+            margin: 0;
+            padding: 20px; 
+            color: #333; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .quiz-container { 
+            width: 100%; 
+            max-width: 1200px; 
+            background: #fff; 
+            padding: 35px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            margin: 0 auto; 
+        }
+        h2 { 
+            text-align: center; 
+            color: #2c3e50; 
+            margin-top: 0;
+            margin-bottom: 25px; 
+            font-size: 1.8em;
+        }
+        .question { 
+            font-weight: 600; 
+            font-size: 1.25em; 
+            margin-bottom: 20px; 
+            line-height: 1.5;
+        }
+        .statement-box { 
+            background-color: #eef2f5; 
+            padding: 20px; 
+            border-left: 5px solid #3498db; 
+            margin-bottom: 25px; 
+            border-radius: 6px; 
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        .options { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        .option-btn { 
+            width: 100%;
+            padding: 16px 20px; 
+            border: 1.5px solid #ccc; 
+            background: #fff; 
+            border-radius: 8px; 
+            text-align: left; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            font-size: 1.05em; 
+            line-height: 1.4;
+        }
+        .option-btn:hover { 
+            background-color: #e8f4fd; 
+            border-color: #3498db; 
+        }
+        .next-btn { 
+            margin-top: 25px; 
+            width: 100%; 
+            padding: 15px; 
+            background: #2ecc71; 
+            color: #fff; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 1.1em; 
+            font-weight: bold;
+            cursor: pointer; 
+            display: none; 
+            transition: background 0.2s;
+        }
+        .next-btn:hover { 
+            background: #27ae60; 
+        }
+        .result-container { 
+            display: none; 
+        }
+        .score-board { 
+            text-align: center; 
+            font-size: 1.5em; 
+            font-weight: bold; 
+            margin-bottom: 25px; 
+            padding: 20px; 
+            background: #e8f8f5; 
+            border-radius: 8px; 
+            color: #16a085; 
+        }
+        .review-item { 
+            border-bottom: 1px solid #eee; 
+            padding: 20px 0; 
+            font-size: 1.05em;
+        }
+        .correct { 
+            color: #27ae60; 
+            font-weight: bold; 
+        }
+        .wrong { 
+            color: #e74c3c; 
+            font-weight: bold; 
+        }
+        .explanation { 
+            font-size: 0.95em; 
+            color: #444; 
+            background: #f9f9f9; 
+            padding: 12px 15px; 
+            margin-top: 10px; 
+            border-radius: 6px; 
+            border-left: 4px solid #f39c12;
+            line-height: 1.5;
+        }
+        .restart-btn { 
+            width: 100%; 
+            padding: 15px; 
+            background: #3498db; 
+            color: #fff; 
+            border: none; 
+            border-radius: 8px; 
+            margin-top: 20px; 
+            cursor: pointer; 
+            font-size: 1.1em; 
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -30,7 +144,7 @@
     <h2>Kuis Keuangan Negara & BLU</h2>
     
     <div id="quiz-box">
-        <div id="question-number" style="font-size:0.85em; color:#777; margin-bottom:10px;"></div>
+        <div id="question-number" style="font-size:0.95em; color:#777; margin-bottom:12px;"></div>
         <div id="question-text" class="question"></div>
         <div id="statement-container"></div>
         <div id="options-container" class="options"></div>
@@ -75,7 +189,7 @@ const questions = [
         s1: "Pemerintah daerah tidak diperbolehkan membentuk Badan Layanan Umum Daerah (BLUD).",
         s2: "Pembentukan BLU hanya diatur di tingkat pemerintah pusat melalui regulasi APBN.",
         answer: 4,
-        exp: "Pernyataan SALAH (Pemda dapat membentuk BLUD berdasarkan Pemendagri/UU Keuangan Negara). Alasan SALAH."
+        exp: "Pernyataan SALAH (Pemda dapat membentuk BLUD berdasarkan Permendagri/UU Keuangan Negara). Alasan SALAH."
     },
     {
         type: "sa",
@@ -430,7 +544,7 @@ function loadQuestion() {
         statementBox.innerHTML = `
             <div class="statement-box">
                 <p><strong>Pernyataan:</strong> ${q.s1}</p>
-                <p style="text-align:center; font-weight:bold; margin:10px 0; color:#e74c3c;">SEBAB</p>
+                <p style="text-align:center; font-weight:bold; margin:12px 0; color:#e74c3c;">SEBAB</p>
                 <p><strong>Alasan:</strong> ${q.s2}</p>
             </div>
         `;
