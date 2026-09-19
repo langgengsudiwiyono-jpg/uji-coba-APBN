@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif Keuangan Negara (50 Soal)</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; }
+        .quiz-container { max-width: 700px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin: auto; }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .question { font-weight: 600; font-size: 1.05em; margin-bottom: 15px; }
+        .statement-box { background-color: #eef2f5; padding: 12px; border-left: 4px solid #3498db; margin-bottom: 15px; border-radius: 4px; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn { padding: 12px 15px; border: 1px solid #ccc; background: #fff; border-radius: 8px; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.9em; }
+        .option-btn:hover { background-color: #e8f4fd; border-color: #3498db; }
+        .next-btn { margin-top: 20px; width: 100%; padding: 12px; background: #2ecc71; color: #fff; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; display: none; }
+        .next-btn:hover { background: #27ae60; }
+        .result-container { display: none; }
+        .score-board { text-align: center; font-size: 1.3em; font-weight: bold; margin-bottom: 20px; padding: 15px; background: #e8f8f5; border-radius: 8px; color: #16a085; }
+        .review-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .correct { color: #27ae60; font-weight: bold; }
+        .wrong { color: #e74c3c; font-weight: bold; }
+        .explanation { font-size: 0.85em; color: #555; background: #f9f9f9; padding: 8px; margin-top: 5px; border-radius: 4px; }
+        .restart-btn { width: 100%; padding: 12px; background: #3498db; color: #fff; border: none; border-radius: 8px; margin-top: 15px; cursor: pointer; font-size: 1em; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Kuis Keuangan Negara & BLU</h2>
+    
+    <div id="quiz-box">
+        <div id="question-number" style="font-size:0.85em; color:#777; margin-bottom:10px;"></div>
+        <div id="question-text" class="question"></div>
+        <div id="statement-container"></div>
+        <div id="options-container" class="options"></div>
+        <button id="next-btn" class="next-btn" onclick="nextQuestion()">Soal Berikutnya</button>
+    </div>
+
+    <div id="result-box" class="result-container">
+        <h2>Papan Skor & Review Evaluasi</h2>
+        <div id="score-board" class="score-board"></div>
+        <div id="review-container"></div>
+        <button class="restart-btn" onclick="restartQuiz()">Ulangi Kuis</button>
+    </div>
+</div>
+
+<script>
+const optSebabAkibat = [
+    "Pernyataan benar, alasan benar, dan keduanya menunjukkan hubungan sebab akibat.",
+    "Pernyataan benar, alasan benar, tetapi keduanya tidak menunjukkan hubungan sebab akibat.",
+    "Pernyataan benar dan alasan salah.",
+    "Pernyataan salah dan alasan benar.",
+    "Pernyataan dan alasan keduanya salah."
+];
+
+const questions = [
+    // --- TIPE SEBAB AKIBAT (1-15) ---
+    {
+        type: "sa",
+        s1: "Badan Layanan Umum (BLU) diberikan fleksibilitas anggaran (flexible budget) untuk melampaui batas maksimal anggaran (pagu anggaran) yang telah ditetapkan ketika terjadi penambahan volume kegiatan pada 1 (satu) periode anggaran.",
+        s2: "Fleksibilitas tersebut diberikan untuk menyesuaikan jumlah belanja dengan volume aktivitas layanan dengan tetap mengikuti praktik bisnis yang sehat.",
+        answer: 0,
+        exp: "Pernyataan BENAR (BLU memiliki fleksibilitas ambang batas anggaran). Alasan BENAR (Fleksibilitas bertujuan menyesuaikan belanja dengan volume aktivitas). Keduanya berhubungan sebab-akibat."
+    },
+    {
+        type: "sa",
+        s1: "Pendapatan yang diperoleh dari layanan Badan Layanan Umum (BLU) wajib disetorkan seluruhnya ke Kas Negara sebelum dipergunakan untuk operasional.",
+        s2: "BLU diselenggarakan untuk memberikan pelayanan umum secara efektif dan efisien sesuai dengan praktik bisnis yang sehat.",
+        answer: 3,
+        exp: "Pernyataan SALAH (Pendapatan BLU dapat digunakan langsung untuk membiayai operasional tanpa disetor ke Kas Negara terlebih dahulu). Alasan BENAR."
+    },
+    {
+        type: "sa",
+        s1: "Pemerintah daerah tidak diperbolehkan membentuk Badan Layanan Umum Daerah (BLUD).",
+        s2: "Pembentukan BLU hanya diatur di tingkat pemerintah pusat melalui regulasi APBN.",
+        answer: 4,
+        exp: "Pernyataan SALAH (Pemda dapat membentuk BLUD berdasarkan Pemendagri/UU Keuangan Negara). Alasan SALAH."
+    },
+    {
+        type: "sa",
+        s1: "Penyusunan APBN harus disetujui oleh DPR sebelum diberlakukan sebagai Undang-Undang.",
+        s2: "DPR memiliki fungsi anggaran untuk membahas dan memberikan approval terhadap rancangan APBN.",
+        answer: 0,
+        exp: "Pernyataan BENAR. Alasan BENAR. Keduanya menunjukkan hubungan sebab akibat sesuai dengan fungsi APBN dalam UUD 1945."
+    },
+    {
+        type: "sa",
+        s1: "Sisa Lebih Pembiayaan Anggaran (SILPA) dapat dipergunakan untuk membiayai pengeluaran anggaran tahun berikutnya.",
+        s2: "SILPA terjadi ketika realisasi penerimaan negara lebih besar dibandingkan realisasi pengeluaran negara.",
+        answer: 0,
+        exp: "Pernyataan BENAR. Alasan BENAR. Definisi SILPA adalah surplus pembiayaan yang digunakan sebagai sumber pembiayaan tahun berikutnya."
+    },
+    {
+        type: "sa",
+        s1: "Barang Milik Negara (BMN) yang tidak dimanfaatkan dapat dijual secara bebas tanpa melalui persetujuan pengelola barang.",
+        s2: "Pengelolaan BMN harus menerapkan asas kepastian hukum, efisiensi, dan akuntabilitas.",
+        answer: 3,
+        exp: "Pernyataan SALAH (Penjualan/pemindahtanganan BMN wajib persetujuan pengelola/DPR sesuai ambang batas). Alasan BENAR."
+    },
+    {
+        type: "sa",
+        s1: "Pemerintah pusat memberikan surplus APBN sebagai dana alokasi umum (DAU) ke daerah.",
+        s2: "DAU bertujuan untuk pemerataan kemampuan keuangan antar-daerah guna membiayai kebutuhan daerah.",
+        answer: 3,
+        exp: "Pernyataan SALAH (DAU bersumber dari pendapatan APBN, bukan dari 'surplus'). Alasan BENAR."
+    },
+    {
+        type: "sa",
+        s1: "Tarif layanan pada Badan Layanan Umum (BLU) ditetapkan oleh Menteri Keuangan/Kepala Daerah.",
+        s2: "Penetapan tarif BLU memperhitungkan kontinuitas layanan, daya beli masyarakat, serta kompetisi yang sehat.",
+        answer: 0,
+        exp: "Pernyataan BENAR. Alasan BENAR dan menjelaskan pertimbangan pengusulan/penetapan tarif BLU."
+    },
+    {
+        type: "sa",
+        s1: "Penyusunan Rencana Kerja dan Anggaran (RKA-K/L) mengacu pada Rencana Kerja Pemerintah (RKP).",
+        s2: "RKP merupakan dokumen perencanaan nasional untuk periode satu tahun.",
+        answer: 0,
+        exp: "Pernyataan BENAR. Alasan BENAR. RKP menjadi dasar keterkaitan antara perencanaan nasional dan penganggaran K/L."
+    },
+    {
+        type: "sa",
+        s1: "Surplus anggaran terjadi ketika pendapatan negara lebih kecil daripada pengeluaran negara.",
+        s2: "Defisit anggaran terjadi jika pengeluaran negara melampaui pendapatan negara.",
+        answer: 3,
+        exp: "Pernyataan SALAH (Pendapatan > Pengeluaran = Surplus, bukan sebaliknya). Alasan BENAR."
+    },
+    {
+        type: "sa",
+        s1: "Barang Milik Negara (BMN) dapat disewakan kepada pihak lain untuk mengoptimalkan penerimaan negara.",
+        s2: "Sewa BMN merupakan salah satu bentuk pemanfaatan BMN tanpa mengubah status kepemilikan.",
+        answer: 0,
+        exp: "Pernyataan BENAR. Alasan BENAR. Keduanya menjelaskan mekanisme pemanfaatan BMN."
+    },
+    {
+        type: "sa",
+        s1: "Menteri Keuangan bertindak sebagai Pengelola Barang atas Barang Milik Negara.",
+        s2: "Menteri/Pimpinan Lembaga bertindak sebagai Pengguna Barang.",
+        answer: 1,
+        exp: "Pernyataan BENAR. Alasan BENAR. Keduanya adalah fakta hukum pengelolaan BMN menurut PP 27/2014, namun tidak berhubungan sebab-akibat."
+    },
+    {
+        type: "sa",
+        s1: "BLU yang statusnya dinilai tidak lagi berkinerja baik dapat dicabut status kewirausahaannya.",
+        s2: "Pencabutan status BLU dilakukan oleh Menteri Keuangan berdasarkan usulan Menteri/Pimpinan Lembaga.",
+        answer: 0,
+        exp: "Pernyataan BENAR. Alasan BENAR. Mekanisme pencabutan status BLU diatur berdasarkan evaluasi kinerja."
+    },
+    {
+        type: "sa",
+        s1: "Dana Desa merupakan bagian dari Transfer ke Daerah (TKD) dalam APBN.",
+        s2: "Dana Desa dialokasikan untuk mendanai penyelenggaraan pemerintahan, pembangunan, dan pemberdayaan masyarakat desa.",
+        answer: 0,
+        exp: "Pernyataan BENAR. Alasan BENAR dan menjelaskan tujuan alokasi Dana Desa."
+    },
+    {
+        type: "sa",
+        s1: "Fungsi stabilisasi APBN bertujuan untuk memelihara keseimbangan fundamental ekonomi nasional.",
+        s2: "Fungsi alokasi APBN mengatur penyiapan fasilitas sarana umum bagi masyarakat.",
+        answer: 1,
+        exp: "Pernyataan BENAR. Alasan BENAR. Keduanya adalah fungsi APBN menurut UU 17/2003, tetapi terpisah/tidak berhubungan sebab-akibat."
+    },
+
+    // --- TIPE PILIHAN GANDA (16-50) ---
+    {
+        type: "pg",
+        q: "Landasan hukum utama yang mengatur Keuangan Negara di Indonesia adalah...",
+        opts: ["UU No. 17 Tahun 2003", "UU No. 1 Tahun 2004", "UU No. 15 Tahun 2004", "PP No. 27 Tahun 2014"],
+        answer: 0,
+        exp: "UU No. 17 Tahun 2003 mengatur tentang Keuangan Negara."
+    },
+    {
+        type: "pg",
+        q: "UU yang secara khusus mengatur tentang Perbendaharaan Negara adalah...",
+        opts: ["UU No. 17 Tahun 2003", "UU No. 1 Tahun 2004", "UU No. 15 Tahun 2004", "UU No. 25 Tahun 2004"],
+        answer: 1,
+        exp: "UU No. 1 Tahun 2004 adalah UU Perbendaharaan Negara."
+    },
+    {
+        type: "pg",
+        q: "Siapakah yang memegang kekuasaan pengelolaan keuangan negara sebagai pengelola fiskal?",
+        opts: ["Presiden", "Menteri Keuangan", "Menteri Perencanaan/Bappenas", "Gubernur Bank Indonesia"],
+        answer: 1,
+        exp: "Menteri Keuangan adalah Pengelola Fiskal dan Wakil Pemerintah dalam kepemilikan kekayaan negara yang dipisahkan."
+    },
+    {
+        type: "pg",
+        q: "Batas maksimal defisit APBN terhadap PDB yang ditetapkan dalam undang-undang aturan keuangan adalah...",
+        opts: ["1%", "2%", "3%", "5%"],
+        answer: 2,
+        exp: "Batas maksimal defisit APBN adalah 3% dari PDB."
+    },
+    {
+        type: "pg",
+        q: "Batas maksimal kumulatif jumlah utang pemerintah pusat dan daerah terhadap PDB adalah...",
+        opts: ["30%", "50%", "60%", "75%"],
+        answer: 2,
+        exp: "Batas maksimal rasio utang pemerintah terhadap PDB adalah 60%."
+    },
+    {
+        type: "pg",
+        q: "Berikut ini yang bukan merupakan sumber Pendapatan Negara adalah...",
+        opts: ["Penerimaan Perpajakan", "Penerimaan Negara Bukan Pajak (PNBP)", "Penerimaan Hibah", "Penerimaan SBN/Utang"],
+        answer: 3,
+        exp: "Penerimaan SBN/Utang termasuk dalam komponen Pembiayaan, bukan Pendapatan."
+    },
+    {
+        type: "pg",
+        q: "Status BLU yang diberikan fleksibilitas penuh dalam pengelolaan keuangan disebut...",
+        opts: ["BLU Bertahap", "BLU Penuh", "BLU Parsial", "BLU Terbatas"],
+        answer: 1,
+        exp: "BLU Penuh mendapatkan fleksibilitas pengelolaan keuangan secara komprehensif."
+    },
+    {
+        type: "pg",
+        q: "Dokumen yang menjadi dasar pelaksanaan anggaran bagi Kementerian/Lembaga adalah...",
+        opts: ["RKA-K/L", "DIPA", "RKP", "KUA-PPAS"],
+        answer: 1,
+        exp: "DIPA (Daftar Isian Pelaksanaan Anggaran) adalah dokumen pelaksanaan anggaran K/L."
+    },
+    {
+        type: "pg",
+        q: "Di bawah ini manakah yang merupakan salah satu asas umum pengelolaan BMN?",
+        opts: ["Kepastian hukum", "Prinsip maksimasi laba", "Eksklusivitas", "Privatisasi"],
+        answer: 0,
+        exp: "Asas BMN meliputi fungsional, kepastian hukum, keterbukaan, efisiensi, akuntabilitas, dan kepastian nilai."
+    },
+    {
+        type: "pg",
+        q: "Penetapan status penggunaan BMN berada di bawah kewenangan...",
+        opts: ["Pengguna Barang", "Pengelola Barang (Menteri Keuangan)", "DPR", "BPK"],
+        answer: 1,
+        exp: "Pengelola Barang (Menkeu) berwenang menetapkan status penggunaan BMN."
+    },
+    {
+        type: "pg",
+        q: "Pemanfaatan BMN dalam bentuk kerja sama pemanfaatan (KSP) jangka waktunya paling lama adalah...",
+        opts: ["10 tahun", "20 tahun", "30 tahun", "50 tahun"],
+        answer: 2,
+        exp: "Jangka waktu KSP BMN paling lama adalah 30 tahun sejak perjanjian ditandatangani."
+    },
+    {
+        type: "pg",
+        q: "Transfer ke Daerah (TKD) yang dialokasikan untuk mengatasi ketimpangan fiskal antar daerah adalah...",
+        opts: ["Dana Alokasi Khusus (DAK)", "Dana Alokasi Umum (DAU)", "Dana Bagi Hasil (DBH)", "Dana Desa"],
+        answer: 1,
+        exp: "DAU bertujuan meratakan kemampuan keuangan antar-daerah."
+    },
+    {
+        type: "pg",
+        q: "Transfer yang dikhususkan untuk membiayai kegiatan fisik/non-fisik tertentu sesuai prioritas nasional disebut...",
+        opts: ["DAU", "DAK", "DBH", "DID"],
+        answer: 1,
+        exp: "DAK (Dana Alokasi Khusus) dialokasikan untuk kegiatan khusus yang menjadi prioritas."
+    },
+    {
+        type: "pg",
+        q: "Fungsi APBN yang bertujuan membagi dana masyarakat untuk penyediaan sarana publik adalah...",
+        opts: ["Fungsi Otorisasi", "Fungsi Alokasi", "Fungsi Distribusi", "Fungsi Stabilisasi"],
+        answer: 1,
+        exp: "Fungsi Alokasi mengarahkan anggaran untuk mengurangi pengangguran dan pemborosan sumber daya."
+    },
+    {
+        type: "pg",
+        q: "Fungsi APBN yang memperhatikan rasa keadilan dan kepatutan bagi masyarakat adalah...",
+        opts: ["Fungsi Otorisasi", "Fungsi Alokasi", "Fungsi Distribusi", "Fungsi Stabilisasi"],
+        answer: 2,
+        exp: "Fungsi Distribusi mengutamakan aspek keadilan dan pemerataan."
+    },
+    {
+        type: "pg",
+        q: "Pemeriksaan atas pengawasan dan pengelolaan keuangan negara dilakukan oleh lembaga independen yaitu...",
+        opts: ["KPK", "BPK", "BPKP", "OJK"],
+        answer: 1,
+        exp: "Badan Pemeriksa Keuangan (BPK) adalah lembaga eksternal yang memeriksa keuangan negara."
+    },
+    {
+        type: "pg",
+        q: "Laporan Keuangan Pemerintah Pusat (LKPP) diperiksa oleh BPK untuk memberikan pertimbangan predikat...",
+        opts: ["WTP, WTA, WTP-DP, Murni", "WTP, WDP, TW, TMP", "A, B, C, D", "Sangat Baik, Baik, Cukup, Kurang"],
+        answer: 1,
+        exp: "Opini BPK terdiri dari: WTP (Wajar Tanpa Pengecualian), WDP, TW (Tidak Wajar), dan TMP (Tidak Menyatakan Pendapat)."
+    },
+    {
+        type: "pg",
+        q: "Sistem penganggaran yang mengaitkan setiap pengeluaran dengan output/outcome layanan disebut...",
+        opts: ["Line-item Budgeting", "Performance-based Budgeting", "Incremental Budgeting", "Zero-based Budgeting"],
+        answer: 1,
+        exp: "Penganggaran Berbasis Kinerja (Performance-based Budgeting) mengaitkan anggaran dengan hasil."
+    },
+    {
+        type: "pg",
+        q: "Tahun Anggaran APBN di Indonesia berlaku selama satu tahun, yaitu mulai tanggal...",
+        opts: ["1 April s.d. 31 Maret", "1 Januari s.d. 31 Desember", "1 Juli s.d. 30 Juni", "1 Oktober s.d. 30 September"],
+        answer: 1,
+        exp: "Tahun anggaran berjalan dari 1 Januari sampai 31 Desember."
+    },
+    {
+        type: "pg",
+        q: "Pengeluaran negara untuk membayar gaji pegawai negeri sipil masuk dalam kelompok belanja...",
+        opts: ["Belanja Barang", "Belanja Pegawai", "Belanja Modal", "Belanja Bantuan Sosial"],
+        answer: 1,
+        exp: "Gaji dan tunjangan ASN dikelompokkan ke Belanja Pegawai."
+    },
+    {
+        type: "pg",
+        q: "Pembelian aset tetap seperti gedung, jalan, dan jembatan oleh instansi pemerintah dikategorikan sebagai...",
+        opts: ["Belanja Barang", "Belanja Jasa", "Belanja Modal", "Belanja Lain-lain"],
+        answer: 2,
+        exp: "Belanja Modal digunakan untuk menambah/memperoleh aset tetap."
+    },
+    {
+        type: "pg",
+        q: "Pemusnahan atau penghapusan BMN dapat dilakukan apabila BMN tersebut...",
+        opts: ["Masih produktif", "Tidak dapat digunakan lagi/rusak berat", "Sedang disewakan", "Memiliki nilai sejarah tinggi"],
+        answer: 1,
+        exp: "Penghapusan dilakukan bila barang rusak berat, hilang, atau secara ekonomis tidak menguntungkan."
+    },
+    {
+        type: "pg",
+        q: "Prinsip utama penetapan Rencana Kerjasama Sewa BMN adalah...",
+        opts: ["Menghilangkan hak kepemilikan negara", "Penerimaan disetor ke Kas Negara sebagai PNBP", "Semua beban pemeliharaan ditanggung Pemerintah", "Tanpa batas waktu"],
+        answer: 1,
+        exp: "Penerimaan hasil sewa BMN wajib disetorkan seluruhnya ke Kas Negara sebagai PNBP."
+    },
+    {
+        type: "pg",
+        q: "Karakteristik utama instansi yang menerapkan fleksibilitas BLU adalah...",
+        opts: ["Mencari keuntungan sebesar-besarnya", "Asetnya dipisahkan dari negara", "Dikelola dengan praktik bisnis yang sehat", "Pegawainya wajib non-ASN"],
+        answer: 2,
+        exp: "Prinsip BLU adalah peningkatan layanan dengan penerapan praktik bisnis yang sehat."
+    },
+    {
+        type: "pg",
+        q: "Perubahan atas APBN (APBN-P) dapat dilakukan apabila terjadi...",
+        opts: ["Keadaan darurat atau perubahan asumsi makro secara signifikan", "Permintaan seluruh anggota dewan", "Perubahan presiden baru", "Setiap tiga bulan sekali"],
+        answer: 0,
+        exp: "APBN-P disusun jika terjadi perkembangan tidak sesuai asumsi makro, keadaan darurat, atau perubahan struktur."
+    },
+    {
+        type: "pg",
+        q: "Badan yang bertugas mengelola dana cadangan/investasi pemerintah pusat adalah...",
+        opts: ["LPS", "LPEI", "LPI (INA)", "PT SMI"],
+        answer: 2,
+        exp: "Lembaga Pengelola Investasi (Sovereign Wealth Fund INA) mengelola investasi pemerintah."
+    },
+    {
+        type: "pg",
+        q: "Pengeluaran pemerintah untuk membiayai kegiatan subsidi energi termasuk dalam kelompok belanja...",
+        opts: ["Belanja Hibah", "Belanja Subsidi", "Belanja Bantuan Sosial", "Belanja Operasional"],
+        answer: 1,
+        exp: "Belanja Subsidi dialokasikan untuk menstabilkan harga barang/jasa kebutuhan pokok."
+    },
+    {
+        type: "pg",
+        q: "Pinjaman atau utang pemerintah yang diterbitkan dalam bentuk instrumen surat berharga dinamakan...",
+        opts: ["SBN (Surat Berharga Negara)", "Kredit Utang LN", "Sertifikat Bank Indonesia", "Pinjaman Luar Negeri"],
+        answer: 0,
+        exp: "SBN terdiri dari SUN (Surat Utang Negara) dan SBSN (Surat Berharga Syariah Negara)."
+    },
+    {
+        type: "pg",
+        q: "Suatu BLU yang belum memenuhi syarat kriteria keuangan penuh diberi status...",
+        opts: ["BLU Khusus", "BLU Bertahap", "BLU Sementara", "BLU Terbatas"],
+        answer: 1,
+        exp: "Status BLU Bertahap diberikan jika syarat substantif dan teknis terpenuhi namun keuangan belum penuh."
+    },
+    {
+        type: "pg",
+        q: "Siapakah pembantu Presiden dalam memegang posisi Pengguna Anggaran K/L?",
+        opts: ["Menteri Keuangan", "Menteri/Pimpinan Lembaga terkait", "Dirjen Anggaran", "Direktur Bendahara Umum Negara"],
+        answer: 1,
+        exp: "Menteri/Pimpinan Lembaga adalah Pengguna Anggaran (PA) untuk K/L yang dipimpinnya."
+    },
+    {
+        type: "pg",
+        q: "Asas APBN yang menghendaki agar semua penerimaan dan pengeluaran dicantumkan secara lengkap dalam dokumen anggaran adalah...",
+        opts: ["Asas Tahunan", "Asas Universalitas", "Asas Spesifisitas", "Asas Akuntabilitas"],
+        answer: 1,
+        exp: "Asas Universalitas menggariskan agar penerimaan dan pengeluaran ditampilkan utuh/bruto."
+    },
+    {
+        type: "pg",
+        q: "Asas APBN yang menghendaki bahwa kredit anggaran harus ditujukan secara khusus untuk jenis pengeluaran tertentu adalah...",
+        opts: ["Asas Tahunan", "Asas Universalitas", "Asas Spesifisitas", "Asas Tranparansi"],
+        answer: 2,
+        exp: "Asas Spesifisitas membatasi penggunaan anggaran sesuai rincian peruntukannya."
+    },
+    {
+        type: "pg",
+        q: "Pernyataan akuntansi pemerintah di Indonesia disusun berdasar standar resmi yaitu...",
+        opts: ["PSAK", "SAP (Standar Akuntansi Pemerintahan)", "IFRS", "SPAP"],
+        answer: 1,
+        exp: "Pemerintah menggunakan SAP yang ditetapkan dengan Peraturan Pemerintah."
+    },
+    {
+        type: "pg",
+        q: "Akuntansi berbasis akrual pada laporan keuangan pemerintah mulai diwajibkan secara penuh sejak tahun...",
+        opts: ["2003", "2008", "2015", "2020"],
+        answer: 2,
+        exp: "Penerapan Standar Akuntansi Pemerintahan Berbasis Akrual secara penuh dilaksanakan mulai tahun anggaran 2015."
+    },
+    {
+        type: "pg",
+        q: "Instrumen pembiayaan obligasi negara yang menggunakan prinsip syariah disebut...",
+        opts: ["SUN", "SBSN / Sukuk Negara", "Ori", "SBR"],
+        answer: 1,
+        exp: "SBSN (Surat Berharga Syariah Negara) atau Sukuk Negara diterbitkan berdasarkan prinsip syariah."
+    }
+];
+
+let currentQuestionIndex = 0;
+let userAnswers = [];
+
+function loadQuestion() {
+    const q = questions[currentQuestionIndex];
+    document.getElementById('question-number').innerText = `Soal ${currentQuestionIndex + 1} dari ${questions.length}`;
+    document.getElementById('next-btn').style.display = 'none';
+    
+    const statementBox = document.getElementById('statement-container');
+    const questionText = document.getElementById('question-text');
+    const optionsBox = document.getElementById('options-container');
+    
+    statementBox.innerHTML = '';
+    optionsBox.innerHTML = '';
+
+    if (q.type === "sa") {
+        questionText.innerText = "Pilihlah hubungan antara pernyataan dan alasan berikut:";
+        statementBox.innerHTML = `
+            <div class="statement-box">
+                <p><strong>Pernyataan:</strong> ${q.s1}</p>
+                <p style="text-align:center; font-weight:bold; margin:10px 0; color:#e74c3c;">SEBAB</p>
+                <p><strong>Alasan:</strong> ${q.s2}</p>
+            </div>
+        `;
+        optSebabAkibat.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectOption(index);
+            optionsBox.appendChild(btn);
+        });
+    } else {
+        questionText.innerText = q.q;
+        q.opts.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectOption(index);
+            optionsBox.appendChild(btn);
+        });
+    }
+}
+
+function selectOption(index) {
+    userAnswers[currentQuestionIndex] = index;
+    const buttons = document.querySelectorAll('.option-btn');
+    buttons.forEach((btn, idx) => {
+        btn.style.backgroundColor = idx === index ? '#d4edda' : '#fff';
+        btn.style.borderColor = idx === index ? '#28a745' : '#ccc';
+    });
+    document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-box').style.display = 'none';
+    document.getElementById('result-box').style.display = 'block';
+
+    let score = 0;
+    const reviewBox = document.getElementById('review-container');
+    reviewBox.innerHTML = '';
+
+    questions.forEach((q, index) => {
+        const isCorrect = userAnswers[index] === q.answer;
+        if (isCorrect) score++;
+
+        const reviewItem = document.createElement('div');
+        reviewItem.className = 'review-item';
+        
+        let qText = q.type === "sa" ? `Soal ${index + 1} (Sebab-Akibat)` : `Soal ${index + 1}: ${q.q}`;
+        let selectedText = q.type === "sa" ? optSebabAkibat[userAnswers[index]] : q.opts[userAnswers[index]];
+        let correctText = q.type === "sa" ? optSebabAkibat[q.answer] : q.opts[q.answer];
+        
+        reviewItem.innerHTML = `
+            <p><strong>${qText}</strong></p>
+            <p>Jawaban Kamu: <span class="${isCorrect ? 'correct' : 'wrong'}">${selectedText || 'Tidak dijawab'}</span></p>
+            ${!isCorrect ? `<p>Jawaban Benar: <span class="correct">${correctText}</span></p>` : ''}
+            <div class="explanation"><strong>Pembahasan:</strong> ${q.exp}</div>
+        `;
+        reviewBox.appendChild(reviewItem);
+    });
+
+    const finalScore = Math.round((score / questions.length) * 100);
+    document.getElementById('score-board').innerText = `Skor Akhir: ${finalScore} / 100 (${score} dari ${questions.length} Soal Benar)`;
+}
+
+function restartQuiz() {
+    currentQuestionIndex = 0;
+    userAnswers = [];
+    document.getElementById('quiz-box').style.display = 'block';
+    document.getElementById('result-box').style.display = 'none';
+    loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
